@@ -7,6 +7,9 @@
 #include <cmath>
 
 template <class T>
+class Vector;
+
+template <class T>
 class Matrix {
 
  private:
@@ -23,8 +26,8 @@ class Matrix {
   //  Copy and move constructors to be done ?
   bool is_square() const noexcept;
   bool is_symmetrical() const noexcept;
-  size_t get_columns_number();
-  size_t get_rows_number();
+  size_t get_columns_number() const;
+  size_t get_rows_number() const;
 
   //  double check this
   std::vector<T>& operator[](size_t idx);
@@ -32,8 +35,8 @@ class Matrix {
 
   /* can add multiplying matrix by a number and operator + for matrices,
   but it is not needed in current task */
-
-  friend Vector mat_vec_mul(const Matrix& matrix, const Vector& vec);
+  template <class U>
+  friend Vector<U> mat_vec_mul(const Matrix<U>& matrix, const Vector<U>& vec);
 };
 
 template <class T>
@@ -43,21 +46,25 @@ class Vector {
 
  public:
   Vector() noexcept = default;
-  Vector(const std::vector<T>& data) = default;
-  Vector(std::vector<T>&& dat) = default;
-  ~Vector() default;
+  Vector(const std::vector<T>& data);
+  Vector(std::vector<T>&& data);
+  ~Vector() = default;
   size_t get_size() const;
-  //  norm type - doulbe
+  //  norm type - double
   double get_euclidean_norm() const;
   T& operator[](size_t idx);
   const T& operator[](size_t idx) const;
   //  operator=??
   Vector& operator+=(const Vector& other);
   // change the operators implementation with +=
-  friend Vector operator+(const Vector& lhs, const Vector& rhs);
-  friend Vector operator-(const Vector& lhs, const Vector& rhs);
-  friend Vector operator*(const T& multiplier, const Vector& vec);
-  friend Vector mat_vec_mul(const Matrix& mat, const Vector& vec);
+  template <class U>
+  friend Vector<U> operator+(const Vector<U>& lhs, const Vector<U>& rhs);
+  template <class U>
+  friend Vector<U> operator-(const Vector<U>& lhs, const Vector<U>& rhs);
+  template <class U>
+  friend Vector<U> operator*(const U& multiplier, const Vector<U>& vec);
+  template <class U>
+  friend Vector<U> mat_vec_mul(const Matrix<U>& mat, const Vector<U>& vec);
 };
 
   /*Solver for only symmetric positively defined matrix.
