@@ -34,9 +34,30 @@ template <class T>
 Matrix<T>::~Matrix() noexcept {}
 
 template <class T>
-bool Matrix<T>::check_size_is_square() noexcept {
+bool Matrix<T>::is_square() const noexcept {
   return num_columns_ == num_lines_;
 }
+
+template <class T>
+bool Matrix<T>::is_symmetrical() const noexcept {
+  if (!is_square) {
+    return false;
+  }
+  bool ans = true;
+  for (size_t i = 0; i < num_rows_ - 1; ++i) {
+    for (size_t j = i + 1; j < num_columns_; ++j) {
+      if (data_[i][j] != data_[j][i]) {
+        ans = false;
+        break;
+      }
+    }
+    if (!ans) {
+      break;
+    }
+  }
+  return ans;
+}
+
 
 template <class T>
 size_t Matrix<T>::get_columns_number() {
@@ -133,3 +154,60 @@ Vector<T> mat_vec_mul(const Matrix<T>& mat, const Vector<T>& vec) {
 }
 
 //  --------------Solver Implementation----------------
+
+SimpleLinearSolver::SimpleLinearSolver(
+                     double epsilon,
+                     Matrix<double> mat,
+                     Vector<double> rhs,
+                     double min_ei,
+                     double max_ei,
+                     bool stop_by_max_iter = false,
+                     size_t max_iter = 0) : 
+                     epsilon(epsilon), min_eigenval(min_ei), max_eigenval(max_ei),
+                     stop_by_max_iter(stop_by_max_iter), max_iter(max_ei)
+{
+  if (!mat.is_square()) {
+    throw std::logic_error("Cannot work with non square matrix");
+  }
+  if (!mat.is_symmetrical()) {
+    throw std::logic_error("Cannot work with non-symmetric matrix");
+  }
+  mat = mat;
+  rhs = rhs;
+  size_t dim = rhs.get_size();
+  std::vector<double> tmp(dim, 0);
+  cur_ans = Vector(tmp);
+}
+
+SimpleLinearSolver::SimpleLinearSolver(
+                     double epsilon,
+                     Matrix<double> mat,
+                     Vector<double> rhs,
+                     Vector<double> start_point,
+                     double min_ei,
+                     double max_ei,
+                     bool stop_by_max_iter = false,
+                     size_t max_iter = 0) : 
+                     epsilon(epsilon), min_eigenval(min_ei), max_eigenval(max_ei),
+                     stop_by_max_iter(stop_by_max_iter), max_iter(max_ei)
+{
+  if (!mat.is_square()) {
+    throw std::logic_error("Cannot work with non square matrix");
+  }
+  if (!mat.is_symmetrical()) {
+    throw std::logic_error("Cannot work with non-symmetric matrix");
+  }
+  mat = mat;
+  rhs = rhs;
+  if (start_point.get_size() != mat.get_columns_number()) {
+    throw std::logic_error("Invalid starting point. Check the dimension");
+  }
+  cur_ans= start_point;
+}
+
+Vector<double> SimpleLinearSolver::simple_iteration_method() {
+  // size_t cur_step = 0;
+  // while (true) {
+  //   cur_ans +=  
+  // }
+}
