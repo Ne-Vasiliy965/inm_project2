@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <exception>
+#include <cmath>
 
 template <class T>
 class Matrix {
@@ -35,8 +36,6 @@ class Matrix {
   friend Vector mat_vec_mul(const Matrix& matrix, const Vector& vec);
 };
 
-
-
 template <class T>
 class Vector {
  private:
@@ -48,9 +47,13 @@ class Vector {
   Vector(std::vector<T>&& dat) = default;
   ~Vector() default;
   size_t get_size() const;
+  //  norm type - doulbe
+  double get_euclidean_norm() const;
   T& operator[](size_t idx);
   const T& operator[](size_t idx) const;
   //  operator=??
+  Vector& operator+=(const Vector& other);
+  // change the operators implementation with +=
   friend Vector operator+(const Vector& lhs, const Vector& rhs);
   friend Vector operator-(const Vector& lhs, const Vector& rhs);
   friend Vector operator*(const T& multiplier, const Vector& vec);
@@ -60,6 +63,7 @@ class Vector {
   /*Solver for only symmetric positively defined matrix.
     In this version you need to give the estimation of 
     max and min eigenvalues of matrix.
+    You should give a good estimate for the min eigenvalue.
     Currently only the type double for matrix*/
 class SimpleLinearSolver {
  private:
@@ -71,8 +75,7 @@ class SimpleLinearSolver {
   double min_eigenval;
   double max_eigenval;
   Vector<double> cur_ans;
-  Vector<double> simple_iteration(Vector<double> cur);
-  Vector<double> simple_iteration_method();
+  void simple_iteration_method();
 
  public:
   SimpleLinearSolver(double epsilon, Matrix<double> mat, Vector<double> rhs,

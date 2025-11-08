@@ -35,12 +35,12 @@ Matrix<T>::~Matrix() noexcept {}
 
 template <class T>
 bool Matrix<T>::is_square() const noexcept {
-  return num_columns_ == num_lines_;
+  return num_columns_ == num_rows_;
 }
 
 template <class T>
 bool Matrix<T>::is_symmetrical() const noexcept {
-  if (!is_square) {
+  if (!is_square()) {
     return false;
   }
   bool ans = true;
@@ -88,6 +88,16 @@ size_t Vector<T>::get_size() const {
 }
 
 template <class T>
+double Vector<T>::get_euclidean_norm() const {
+  double squared_norm = 0;
+  size_t size = get_size();
+  for (size_t i = 0; i < size; ++i) {
+    squared_norm += std::pow(static_cast<double>(data_[i]), 2);
+  }
+  return std::sqrt(squared_norm);
+}
+
+template <class T>
 T& Vector<T>::operator[](size_t idx) {
   return data_[idx];
 }
@@ -95,6 +105,19 @@ T& Vector<T>::operator[](size_t idx) {
 template <class T>
 const T& Vector<T>::operator[](size_t idx) const {
   return data_[idx];
+}
+
+template <class T>
+Vector<T>& Vector<T>::operator+= (const Vector& other) {
+  size_t size = this->get_size();
+  size_t rhs_size = other.get_size();
+  if (size != rhs_size) {
+    throw std::logic_error("Cannot sum vectros with different sizes");
+  }
+  for (size_t i = 0; i < size; ++i) {
+    this->data_[i] += other[i];
+  }
+  return *this;
 }
 
 template <class T>
@@ -127,7 +150,7 @@ Vector<T> operator-(const Vector<T>& lhs, const Vector<T>& rhs) {
 
 template <class T>
 Vector<T> operator*(const T& multiplier, const Vector<T>& vec) {
-  size_t cur_size = lhs.get_size();
+  size_t cur_size = vec.get_size();
   std::vector tmp(cur_size);
   for (size_t i = 0; i < cur_size; ++i) {
     tmp[i] = multiplier * vec[i];
@@ -150,7 +173,7 @@ Vector<T> mat_vec_mul(const Matrix<T>& mat, const Vector<T>& vec) {
     }
     tmp[i] = cur_elem;
   }
-  return Vector(tmp)
+  return Vector(tmp);
 }
 
 //  --------------Solver Implementation----------------
@@ -164,7 +187,7 @@ SimpleLinearSolver::SimpleLinearSolver(
                      bool stop_by_max_iter = false,
                      size_t max_iter = 0) : 
                      epsilon(epsilon), min_eigenval(min_ei), max_eigenval(max_ei),
-                     stop_by_max_iter(stop_by_max_iter), max_iter(max_ei)
+                     stop_by_max_iter(stop_by_max_iter), max_iter(max_iter)
 {
   if (!mat.is_square()) {
     throw std::logic_error("Cannot work with non square matrix");
@@ -189,7 +212,7 @@ SimpleLinearSolver::SimpleLinearSolver(
                      bool stop_by_max_iter = false,
                      size_t max_iter = 0) : 
                      epsilon(epsilon), min_eigenval(min_ei), max_eigenval(max_ei),
-                     stop_by_max_iter(stop_by_max_iter), max_iter(max_ei)
+                     stop_by_max_iter(stop_by_max_iter), max_iter(max_iter)
 {
   if (!mat.is_square()) {
     throw std::logic_error("Cannot work with non square matrix");
@@ -205,9 +228,22 @@ SimpleLinearSolver::SimpleLinearSolver(
   cur_ans= start_point;
 }
 
-Vector<double> SimpleLinearSolver::simple_iteration_method() {
-  // size_t cur_step = 0;
-  // while (true) {
-  //   cur_ans +=  
-  // }
+void SimpleLinearSolver::simple_iteration_method() {
+  size_t cur_step = 0;
+  double lr = 2 / (min_eigenval + max_eigenval);
+  while (true) {
+    cur_step += 1;
+    cur_ans += lr * (rhs - mat_vec_mul(mat, cur_ans));
+    /* e_k = x* - x,  r_k = b - Ax, r_k = Ae_k
+    e_k = A^-1r_k -> ||e_k|| <= ||A^-1|| * ||r_k|| */
+    if (((rhs - mat_vec_mul(mat, cur_ans)).get_euclidean_norm() / min_eigenval < epsilon)
+          || (stop_by_max_iter && (cur_step > max_iter))) {
+            break;
+    }
+  }
+}
+
+Vector<double> SimpleLinearSolver::solve() {
+  simple_iteration_method();
+  return cur_ans;
 }
