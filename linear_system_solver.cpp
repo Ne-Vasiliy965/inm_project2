@@ -114,4 +114,22 @@ Vector<T> operator*(const T& multiplier, const Vector<T>& vec) {
   return Vector(tmp);
 }
 
+template <class T>
+Vector<T> mat_vec_mul(const Matrix<T>& mat, const Vector<T>& vec) {
+  size_t num_columns = mat.get_columns_number();
+  size_t num_rows = mat.get_rows_number();
+  if (num_columns != vec.get_size()) {
+    throw std::logic_error("Cannot execute matvec multiplication: the sizes are inconsistent");
+  }
+  std::vector tmp(num_rows);
+  for (size_t i = 0; i < num_rows; ++i) {
+    T cur_elem = 0;
+    for (size_t j = 0; j < num_columns; ++j) {
+      cur_elem += mat[i][j] * vec[j];
+    }
+    tmp[i] = cur_elem;
+  }
+  return Vector(tmp)
+}
+
 //  --------------Solver Implementation----------------

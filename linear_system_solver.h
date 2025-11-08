@@ -30,6 +30,8 @@ class Matrix {
 
   /* can add multiplying matrix by a number and operator + for matrices,
   but it is not needed in current task */
+
+  friend Vector mat_vec_mul(const Matrix& matrix, const Vector& vec);
 };
 
 
@@ -51,6 +53,7 @@ class Vector {
   friend Vector operator+(const Vector& lhs, const Vector& rhs);
   friend Vector operator-(const Vector& lhs, const Vector& rhs);
   friend Vector operator*(const T& multiplier, const Vector& vec);
+  friend Vector mat_vec_mul(const Matrix& mat, const Vector& vec);
 };
 
 
