@@ -1,3 +1,4 @@
+#include "vector_matrix.h"
 #include "linear_system_solver.h"
 
 //  --------------Solver Implementation----------------
