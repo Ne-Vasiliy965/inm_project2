@@ -88,7 +88,7 @@ void test_3x3_system() {
     
     SimpleLinearSolver solver(1e-8, A, b, 6.5, 13.5);
     Vector<double> solution = solver.solve();
-    
+    assert(vectors_equal(solution, x, 1e-7));
     assert(check_solution(A, solution, b, 1e-8, 6.5));
     std::cout << "3x3 system test passed!" << std::endl;
 }
