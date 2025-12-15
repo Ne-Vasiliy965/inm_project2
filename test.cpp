@@ -36,6 +36,7 @@ void test_1x1_system() {
     Vector<double> expected({2.0});
     assert(vectors_equal(solution, expected, 1e-10));
     assert(check_solution(A, solution, b, 1e-10, 4.0));
+    // std::cout << solution;
     std::cout << "1x1 system test passed!" << std::endl;
 }
 
@@ -52,6 +53,7 @@ void test_2x2_diagonal() {
     Vector<double> expected({2.0, 2.0});
     assert(vectors_equal(solution, expected, 1e-10));
     assert(check_solution(A, solution, b, 1e-10, 4.0));
+    // std::cout << solution;
     std::cout << "2x2 diagonal system test passed!" << std::endl;
 }
 
@@ -70,6 +72,7 @@ void test_2x2_full() {
     Vector<double> expected({1.0, 2.0});
     assert(vectors_equal(solution, expected, 1e-10));
     assert(check_solution(A, solution, b, 1e-10, 3.0));
+    // std::cout << solution;
     std::cout << "2x2 full system test passed!" << std::endl;
 }
 

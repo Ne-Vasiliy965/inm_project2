@@ -4,6 +4,7 @@
 #include <vector>
 #include <stdexcept>
 #include <cmath>
+#include <iostream>
 
 template <class T>
 class Vector;
@@ -109,7 +110,6 @@ class Vector {
     return std::sqrt(squared_norm);
   }
 
-
   T& operator[](size_t idx) {
     return data_[idx];
   }
@@ -128,6 +128,7 @@ class Vector {
     }
     return *this;
   }
+
   // change the operators implementation with +=
   friend Vector operator+(const Vector<T>& lhs, const Vector<T>& rhs) {
     size_t cur_left_size = lhs.get_size();
@@ -135,7 +136,7 @@ class Vector {
     if (cur_left_size != cur_right_size) {
       throw std::logic_error("Cannot sum vectors with different sizes");
     }
-    std::vector tmp(cur_left_size);
+    std::vector<T> tmp(cur_left_size);
     for (size_t i = 0; i < cur_left_size; ++i) {
       tmp[i] = lhs[i] + rhs[i];
     }
@@ -166,6 +167,15 @@ class Vector {
     return Vector(tmp);
   }
 };
+
+template <class T>
+std::ostream& operator<<(std::ostream& os, const Vector<T>& vec) {
+  size_t s = vec.get_size();
+  for (size_t i = 0; i < s; ++i) {
+    os << vec[i] << ' ';
+  }
+  return os;
+}
 
 template <class T>
 Vector<T> mat_vec_mul(const Matrix<T>& mat, const Vector<T>& vec) {
